@@ -1,1 +1,1 @@
-# Pet
+# React Native Architecture
