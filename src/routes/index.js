@@ -2,12 +2,18 @@ import React from 'react'
 import { Image } from 'react-native'
 import {
     createBottomTabNavigator,
-    createAppContainer
+    createAppContainer,
+    createStackNavigator,
+    createSwitchNavigator
 } from 'react-navigation'
 
 import HomePage from '../pages/Home'
 import MessagePage from '../pages/Message'
+import MessageDetailPage from '../pages/Message/detail'
 import ProfilePage from '../pages/Profile'
+import HomeDetailPage from '../pages/Home/detail'
+import LaunchPage from '../pages/Launch'
+import BadgeItem from '../components/BadgeTabbarItem'
 
 import styles from '../styles'
 
@@ -32,22 +38,79 @@ const tabarIcons = {
     },
     Profile: {
         render: focused => {
-            return focused
-                ? _renderTabbarIcon(require('../images/tabbar_profile_selected.png'))
-                : _renderTabbarIcon(require('../images/tabbar_profile.png'))
+            return <BadgeItem focused={focused} />
         }
     }
 }
 
-const tabBarStack = createBottomTabNavigator({
+const HomeStack = createStackNavigator({
     Home: {
-        screen: HomePage,
+       screen: HomePage,
+       navigationOptions: {
+           title: '首页'
+       }
+    },
+    HomeDetail: {
+       screen: HomeDetailPage,
+       navigationOptions: {
+           title: '详情'
+       } 
+    }
+}, {
+    defaultNavigationOptions: {
+        headerStyle: {
+            backgroundColor: '#fff',
+            borderBottomWidth: 0,
+        },
+        headerTintColor: '#5B99FA',
+        headerBackTitle: null
+    }
+})
+
+HomeStack.navigationOptions = ({ navigation }) => {
+    let tabBarVisible = true
+    if (navigation.state.index > 0) {
+        tabBarVisible = false
+    }
+    return {
+        tabBarVisible
+    }
+}
+
+const MessageStack = createStackNavigator({
+    Message: {
+        screen: MessagePage,
+        navigationOptions: {
+            header: null
+        }
+    },
+    MessageDetail: {
+        screen: MessageDetailPage,
+        navigationOptions: {
+            header: null
+        }
+    }
+}, {
+    defaultNavigationOptions: {
+        
+        headerStyle: {
+            backgroundColor: '#fff',
+            borderBottomWidth: 0,
+        },
+        headerTintColor: '#5B99FA',
+        headerBackTitle: null
+    }
+})
+
+const TabBarStack = createBottomTabNavigator({
+    Home: {
+        screen: HomeStack,
         navigationOptions: {
             tabBarLabel: '首页'
         }   
     },
     Message: {
-        screen: MessagePage,
+        screen: MessageStack,
         navigationOptions: {
             tabBarLabel: '信息'
         }
@@ -55,7 +118,7 @@ const tabBarStack = createBottomTabNavigator({
     Profile: {
         screen: ProfilePage,
         navigationOptions: {
-            header: null
+            tabBarLabel: '我的'
         }
     }
 }, {
@@ -71,4 +134,19 @@ const tabBarStack = createBottomTabNavigator({
     }
 })
 
-export default createAppContainer(tabBarStack)
+
+const SwitchStack = createSwitchNavigator({
+    Launch: {
+        screen: LaunchPage,
+        navigationOptions: {
+            header: null
+        }
+    },
+    Tabbar: {
+        screen: TabBarStack
+    }
+}, {
+    initialRouteName: 'Launch'
+})
+
+export default createAppContainer(SwitchStack)
